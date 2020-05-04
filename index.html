@@ -2,9 +2,9 @@
 <html>
 <head>
 	<title>Coursera JIRA Ticket Tracker</title>
-	<link rel="stylesheet" href="css/pure-min.css">
+	<link rel="stylesheet" href="https://unpkg.com/purecss@1.0.1/build/pure-min.css" integrity="sha384-oAOxQR6DkCoMliIh8yFnu25d7Eq/PHS21PClpwjOTeU2jRSq11vu66rf90/cZr47" crossorigin="anonymous">
 	<link rel="stylesheet" href="css/sexy.css">
-	<script type="text/javascript" src="js/angular.min.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
 </head>
 <body ng-app="CJTTApp">
 	<div class="content" ng-controller="CJTTController as JTCtrl">
@@ -45,7 +45,7 @@
 			</div>
 			<span class="error" ng-show="JTCtrl.error">Something is missing ...</span>
 			<div class="pure-control-group">
-				<button class="pure-button pure-u-1-2 button-success" ng-click="JTCtrl.trackTicket()"><b>Track Ticket</b></button>
+				<button class="pure-button pure-u-1-2 button-success pure-u-1" ng-click="JTCtrl.trackTicket()"><b>Track Ticket</b></button>
 			</div>
 		</form>
 		<span class="enjoy" ng-show="JTCtrl.logrado">
