@@ -1,148 +1,145 @@
-(function(){
-  'use strict';
-  angular.module('CJTTApp', [])
-  .controller('CJTTController', CJTTController)
-  .service('CJTTService', CJTTService)
-  .constant('GASEndpoint', 'https://script.google.com/a/24-7intouch.com/macros/s/AKfycby2EgOWBETZ5jsQac2nccFKJ9qhyVktQ11bmt0G/exec');
+var app = new Vue({
+	el: '#app',
+	data: {
+		GASEndpoint: 'https://script.google.com/a/24-7intouch.com/macros/s/AKfycbxbmjQqQ656GhnSMon6DInq5HMb1FiIjzXXB8CV/exec',
+		email: '',
+		business: '',
+		jiraList: [],
+		businesses: [],
+		jira: '',
+		newJira: '',
+		report: '',
+		ticket: '',
+		forma: false,
+		nuevoJira: false,
+		reporte: false,
+		error: false,
+		cargando: true,
+		logrado: false,
+		fallado: false
+	},
+	methods: {
+		change: function () {
+			if (this.jira == 'new') {
+				this.nuevoJira = true;
+			} else if (this.jira != '') {
+				this.nuevoJira = false;
+				this.retrieveJIRA(this.jira);
+			}
 
-  CJTTController.$inject = ['CJTTService'];
-  function CJTTController(CJTTService) {
-    var JTCtrl = this;
-    JTCtrl.error = false;
-    JTCtrl.forma = false;
-    JTCtrl.newjirabox = false;
-    JTCtrl.descriptionbox = false;
-    JTCtrl.loading = true;
-    JTCtrl.business = "b2c";
-    JTCtrl.jira = "";
-    JTCtrl.newjira = "";
-    JTCtrl.description = "";
-    JTCtrl.reference = "";
-    JTCtrl.ticket = "";
-    JTCtrl.jiralist = [];
-    JTCtrl.change = function () {
-      JTCtrl.error = false;
-      if (JTCtrl.jira === "new") {
-        JTCtrl.newjirabox = true;
-        JTCtrl.descriptionbox = false;
-        JTCtrl.description = "";
-      } else {
-        JTCtrl.loading = true;
-        var promesa1 = CJTTService.getJIRAInfo(JTCtrl.jira);
-        JTCtrl.descriptionbox = false;
-        promesa1.then(function (respuesta) {
-          JTCtrl.newjirabox = false;
-          JTCtrl.loading = false;
-          if (respuesta.length == 0) {
-            JTCtrl.description = "";
-            JTCtrl.reference = "";
-          } else {
-            JTCtrl.description = respuesta.desc;
-            JTCtrl.reference = respuesta.ref;
-            JTCtrl.descriptionbox = true;
-          };
-        });
-      };
-    };
-    JTCtrl.getJIRAS = function () {
-      JTCtrl.error = false;
-      JTCtrl.loading = true;
-      var promesa2 = CJTTService.getTrackerJIRAs();
-      promesa2.then(function (respuesta) {
-        JTCtrl.loading = false;
-        if (respuesta.length == 0) {
-          JTCtrl.jiralist = [];
-        } else {
-          JTCtrl.jiralist = respuesta;
-          JTCtrl.forma = true;
-        };
-      });
-    };
-    JTCtrl.retrieveJIRA = function () {
-      JTCtrl.error = false;
-      JTCtrl.loading = true;
-      JTCtrl.descriptionbox = false;
-      var promesa3 = CJTTService.getJIRAInfo(JTCtrl.newjira);
-      promesa3.then(function (respuesta) {
-        JTCtrl.loading = false;
-        if (respuesta.length == 0) {
-          JTCtrl.description = "That JIRA doesn't exist in current Known Issues records.";
-          JTCtrl.reference = "0";
-          JTCtrl.descriptionbox = true;
-        } else {
-          JTCtrl.description = respuesta.desc;
-          JTCtrl.reference = respuesta.ref;
-          JTCtrl.descriptionbox = true;
-        };
-      });
-    };
-    JTCtrl.trackTicket = function () {
-      JTCtrl.error = false;
-      if (((JTCtrl.jira != "") || (JTCtrl.jira != "new") || (JTCtrl.newjira != "")) && (JTCtrl.description != "") && (JTCtrl.ticket != "") && (JTCtrl.reference != "") && (JTCtrl.reference != "0")) {
-        JTCtrl.loading = true;
-        if (JTCtrl.jira == "new") {
-          var jirasent = JTCtrl.newjira;
-        } else {
-          var jirasent = JTCtrl.jira;
-        }
-        var promesa4 = CJTTService.sendTicket(jirasent, JTCtrl.business, JTCtrl.ticket);
-        promesa4.then(function (respuesta) {
-          JTCtrl.loading = false;
-          if (respuesta) {
-            JTCtrl.forma = false;
-            JTCtrl.logrado = true;
-          } else {
-            JTCtrl.fallado = true;
-          };
-        });
-      } else {
-        JTCtrl.error = true;
-      };
-    };
-  };
-
-  CJTTService.$inject = ['$http', 'GASEndpoint'];
-  function CJTTService($http, GASEndpoint) {
-    var JTSrvs = this;
-    JTSrvs.getTrackerJIRAs = function () {
-      return $http.get(GASEndpoint + '?option=getList',{
-        jsonpCallbackParam: 'option'
-      })
-      .then(function (result) {
-        return result.data;
-      }).catch(function (result) {
-        console.log(result);
-      });
-    };
-    JTSrvs.getJIRAInfo = function (jira) {
-      return $http.get(GASEndpoint + '?option=getDesc&jira=' + jira, {
-        jsonpCallbackParam: 'option'
-      })
-      .then(function (result) {
-        return result.data;
-      }).catch(function (result) {
-        console.log(result);
-      });
-    };
-    JTSrvs.sendTicket = function (jira, business, ticket) {
-      var ctrl = '' + Date.now();
-      var p1 = '&jira=' + jira;
-      var p2 = '&business=' + business;
-      var p3 = '&ticket=' + ticket;
-      var p4 = '&stamp=' + ctrl;
-      var url = GASEndpoint + '?option=trackTicket' + p1 + p2 + p3 + p4;
-      return $http.get(url, {
-        jsonpCallbackParam: 'option'
-      })
-      .then(function (result) {
-        if (result.data.stamp == ctrl) {
-          return result.data.success;
-        } else {
-          return false;
-        };
-      }).catch(function (result) {
-        return false;
-      });
-    };
-  };
-})();
+		},
+		retrieveJIRA: function (jiraR) {
+			var self = this;
+			console.log(self.jira);
+			if ((self.jira == '') && (self.newJira == '')) {
+				self.error = true;
+			} else {
+				self.error = false;
+				self.reporte = false;
+				self.cargando = true;
+				self.report = '';
+				$.ajax({
+					url: self.GASEndpoint + '?option=getDesc&AID=' + self.email + '&jira=' + jiraR,
+					method: 'GET',
+					success: function (data) {
+						self.cargando = false;
+						self.report = JSON.parse(data);
+						self.reporte = true;
+					},
+					error: function (error) {
+						self.cargando = false;
+						console.log(error);
+					}
+				});
+			}
+		},
+		trackTicket: function () {
+			var self = this;
+			self.error = false;
+			self.ticket = parseInt(self.ticket);
+			if (((self.jira != '') || (self.jira != 'new') || (self.newJira != '')) && (self.business != '') && (self.report.desc != '') && (self.ticket != '') && (self.report.ref != '') && (self.report.ref != '0') && Number.isInteger(self.ticket)) {
+				self.cargando = true;
+				if (self.jira == 'new') {
+					var jirasent = self.newJira;
+				} else {
+					var jirasent = self.jira;
+				}
+				var ctrl = '' + Date.now();
+				var p1 = '&jira=' + jirasent;
+				var p2 = '&business=' + self.business;
+				var p3 = '&ticket=' + self.ticket;
+				var p4 = '&stamp=' + ctrl;
+				var p5 = '&AID=' + self.email;
+				var direccion = self.GASEndpoint + '?option=trackTicket' + p1 + p2 + p3 + p4 + p5;
+				$.ajax({
+					url: direccion,
+					method: 'GET',
+					success: function (data) {
+						var espero = JSON.parse(data);
+						if (espero.success && (espero.stamp == ctrl)) {
+							self.cargando = false;
+							self.forma = false;
+							self.error = false;
+							self.logrado = true;
+						} else {
+							self.cargando = false;
+							self.fallado = true;
+						}
+					},
+					error: function (error) {
+						console.log(error)
+						self.cargando = false;
+						self.fallado = true;
+					}
+				});
+			} else {
+				self.error = true;
+			}
+		},
+		getTab: function () {
+			return new Promise((resolve,reject) => {
+				try {
+					chrome.tabs.query({
+						active: true,
+						currentWindow: true
+						},
+						function (tabs) {
+							resolve(tabs[0].url);
+						}
+					)
+				} catch (err) {
+					reject(err);
+				}
+			})
+		},
+	},
+	created: function () {
+		var self = this;
+		chrome.identity.getProfileUserInfo(function (info) {
+			self.email = info.email;
+			$.ajax({
+				url: self.GASEndpoint + '?option=getList&AID=' + self.email,
+				method: 'GET',
+				success: function (data) {
+					self.cargando = false;
+					var intro = JSON.parse(data);
+					console.log(intro);
+					self.jiraList = intro["jiras"];
+					self.businesses = intro["opts"]
+					self.forma = true;
+				},
+				error: function (error) {
+					console.log(error)
+				}
+			});
+		});
+		async function tabHolder() {
+			let tempURL = await self.getTab();
+			if (tempURL.includes('https://courserahelp.zendesk.com/agent/tickets/')) {
+				var splitURL = tempURL.split('/');
+				self.ticket = splitURL[splitURL.length - 1];
+			}
+		}
+		tabHolder();
+	}
+})

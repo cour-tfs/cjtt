@@ -1,0 +1,29 @@
+{
+	"name": "Coursera JIRA Ticket Tracker",
+	"version": "0.2.1",
+	"description": "Extension to track tickets with JIRA reports. Coursera TFS",
+	"manifest_version": 2,
+	"browser_action": {
+		"default_action": {
+			"32":"imgs/Icon-32.png",
+			"48":"imgs/Icon-48.png",
+			"64":"imgs/Icon-64.png",
+			"72":"imgs/Icon-72.png",
+			"128":"imgs/Icon-128.png",
+			"172":"imgs/Icon-172.png",
+			"256":"imgs/Icon-256.png"
+		},
+		"default_popup": "popup.html"
+	},
+	"content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+	"icons": {
+		"32":"imgs/Icon-32.png",
+		"48":"imgs/Icon-48.png",
+		"64":"imgs/Icon-64.png",
+		"72":"imgs/Icon-72.png",
+		"128":"imgs/Icon-128.png",
+		"172":"imgs/Icon-172.png",
+		"256":"imgs/Icon-256.png"
+	},
+	"permissions": ["identity","tabs","identity.email","https://script.google.com/*"]
+}

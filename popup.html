@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head>
+	<title>Coursera JIRA Ticket Tracker</title>
+	<link rel="stylesheet" href="css/pure-min.css">
+	<link rel="stylesheet" href="css/sexy.css">
+	<script src="js/vue.min.js"></script>
+</head>
+<body>
+	<div class="content" id="app">
+		<h1>JIRA<br>Ticket Tracker</h1>
+		<span><b>Agent:</b> {{ email }}</span>
+		<br>
+		<br>
+		<form v-if="forma" v-on:submit.prevent class="pure-form pure-form-stacked">
+			<div class="pure-control-group">
+				<legend><b>Choose Business</b></legend>
+				<select class="pure-u-1" v-model="business">
+					<option v-for="biz in businesses" v-bind:value="biz.key">{{biz.value}}</option>
+				</select>
+			</div>
+			<div class="pure-control-group">
+				<legend><b>Choose the JIRA</b></legend>
+				<select class="pure-u-1" v-model="jira" v-on:click="change()">
+					<option v-for="jiraItem in jiraList">{{jiraItem}}</option>
+					<option value="new">Add JIRA</option>
+				</select>
+			</div>
+			<div class="pure-control-group" v-if="nuevoJira">
+				<legend><b>Enter new JIRA</b></legend>
+				<input class="pure-input-1" type="text" placeholder="LS-0000" v-model="newJira">
+				<button class="pure-button pure-u-1-2 button-secondary" v-on:click="retrieveJIRA(newJira)">Get JIRA</button>
+			</div>
+			<div class="pure-control-group" v-if="reporte">
+				<legend><b>Description</b></legend>
+				<span class="desc">{{report.desc}}<br>Ref: #{{report.ref}}</span>
+			</div>
+			<div class="pure-control-group" v-if="reporte">
+				<legend><b>Ticket reference</b></legend>
+				<input class="pure-input-1" type="text" placeholder="000000" v-model="ticket">
+			</div>
+			<span class="error" v-if="error">Something is missing ...</span>
+			<div class="pure-control-group" v-if="reporte">
+				<button class="pure-button pure-u-1 button-success" v-on:click="trackTicket()"><b>Track Ticket</b></button>
+			</div>
+		</form>
+		<span class="enjoy" v-if="logrado">
+			<b>Your ticket has been tracked!</b><br>
+			<b>Ticket:</b> {{ticket}}<br>
+			<b>JIRA:</b> {{jira == "new"? newJira : jira}}<br><br>
+			Remember to <b>link</b> it and <b>notify</b>.
+		</span>
+		<span class="error" v-if="fallado"><b>Something went wrong.<br>The ticket wasn't tracked.</b></span>
+		<div v-if="cargando" class="loader">
+			<img src="imgs/loading.gif">
+		</div>
+	<div>
+		<a href="mailto:coursera.kb@24-7intouch.com"><span class="signature">Coursera TFS 2021</span></a>
+	</div>
+	<script src="js/jquery-3.5.1.min.js"></script>
+	<script src="js/action.js"></script>
+</body>
+</html>
